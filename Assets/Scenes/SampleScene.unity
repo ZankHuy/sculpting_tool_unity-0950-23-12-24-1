@@ -3296,7 +3296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   focusPoint: {fileID: 2107430534}
-  orbitSpeed: 10000
+  orbitSpeed: 50
   panSpeed: 0.1
   zoomSpeed: 10
   minDistance: 2

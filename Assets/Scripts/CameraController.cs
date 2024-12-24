@@ -3,7 +3,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public Transform focusPoint;       // The point the camera orbits around
-    public float orbitSpeed = 10000f;    // Speed of orbiting (degrees per second)
+    public float orbitSpeed = 100f;    // Speed of orbiting (degrees per second)
     public float panSpeed = 0.1f;      // Speed of panning (world units per pixel)
     public float zoomSpeed = 10f;      // Speed of zooming (world units per scroll unit)
     public float minDistance = 2f;     // Minimum zoom distance
@@ -11,7 +11,6 @@ public class CameraController : MonoBehaviour
 
     private float currentDistance;     // Current distance from the focus point
     private Vector3 lastMousePosition; // Last recorded mouse position
-    private Vector3 offset;           // Initial offset between the camera and the focus point
 
     void Start()
     {
@@ -21,9 +20,8 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-        // Initialize the camera's distance and offset to the focus point
+        // Initialize the camera's distance from the focus point
         currentDistance = Vector3.Distance(transform.position, focusPoint.position);
-        offset = transform.position - focusPoint.position;
     }
 
     void Update()
@@ -57,15 +55,19 @@ public class CameraController : MonoBehaviour
         Vector3 delta = Input.mousePosition - lastMousePosition;
 
         // Calculate the horizontal and vertical rotation based on the mouse movement
-        float horizontalRotation = delta.x * orbitSpeed * Time.deltaTime / Screen.width;
-        float verticalRotation = -delta.y * orbitSpeed * Time.deltaTime / Screen.height;
+        float horizontalRotation = delta.x * orbitSpeed * Time.deltaTime;
+        float verticalRotation = -delta.y * orbitSpeed * Time.deltaTime;
 
-        // Apply rotation to the offset (the camera's relative position to the focus point)
-        offset = Quaternion.AngleAxis(horizontalRotation, Vector3.up) * offset;
-        offset = Quaternion.AngleAxis(verticalRotation, transform.right) * offset;
+        // Rotate around the focus point dynamically
+        Quaternion horizontalRotationQuat = Quaternion.AngleAxis(horizontalRotation, Vector3.up);
+        Quaternion verticalRotationQuat = Quaternion.AngleAxis(verticalRotation, transform.right);
 
-        // Set the camera position based on the updated offset
-        transform.position = focusPoint.position + offset;
+        // Calculate the new position
+        Vector3 direction = (transform.position - focusPoint.position).normalized * currentDistance;
+        direction = horizontalRotationQuat * direction;
+        direction = verticalRotationQuat * direction;
+
+        transform.position = focusPoint.position + direction;
 
         // Always look at the focus point
         transform.LookAt(focusPoint);
@@ -79,6 +81,9 @@ public class CameraController : MonoBehaviour
         // Pan the camera based on the mouse movement
         Vector3 panMovement = new Vector3(-delta.x * panSpeed, -delta.y * panSpeed, 0);
         transform.Translate(panMovement, Space.Self);
+
+        // Update the focus point to match the new camera position
+        focusPoint.position += transform.TransformDirection(panMovement);
     }
 
     // Handle Zooming (Mouse Scroll Wheel)
@@ -91,10 +96,10 @@ public class CameraController : MonoBehaviour
     // Adjust the zoom distance based on input
     private void AdjustZoom(float deltaZoom)
     {
-        currentDistance = Mathf.Clamp(currentDistance + deltaZoom, minDistance, maxDistance);
+        currentDistance = Mathf.Clamp(currentDistance - deltaZoom, minDistance, maxDistance);
 
         // Update camera position based on zoom
-        offset = offset.normalized * currentDistance;
-        transform.position = focusPoint.position + offset;
+        Vector3 direction = (transform.position - focusPoint.position).normalized;
+        transform.position = focusPoint.position + direction * currentDistance;
     }
 }

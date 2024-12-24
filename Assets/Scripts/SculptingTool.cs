@@ -20,8 +20,6 @@ public class SculptingTool : MonoBehaviour
     [SerializeField] private AudioClip pushSound;
     [Tooltip("Sound when using Pull mode.")]
     [SerializeField] private AudioClip pullSound;
-    [Tooltip("Sound when using Grab mode.")]
-    [SerializeField] private AudioClip grabSound;
     [Tooltip("Sound when using Pinch mode.")]
     [SerializeField] private AudioClip pinchSound;
     [Tooltip("Sound when using Smooth mode.")]
@@ -34,7 +32,7 @@ public class SculptingTool : MonoBehaviour
     private Vector3[] modifiedVertices;
     private Vector3[] originalNormals;
 
-    private enum SculptMode { Push, Pull, Grab, Pinch, Smooth }
+    private enum SculptMode { Push, Pull, Pinch, Smooth }
     [SerializeField] private SculptMode currentMode = SculptMode.Push;
 
     private bool isSculpting = false;
@@ -216,9 +214,6 @@ public class SculptingTool : MonoBehaviour
                     case SculptMode.Pull:
                         HandlePull(i, influence);
                         break;
-                    case SculptMode.Grab:
-                        HandleGrab(i, hitPoint, influence);
-                        break;
                     case SculptMode.Pinch:
                         HandlePinch(i, hitPoint, influence);
                         break;
@@ -252,16 +247,6 @@ public class SculptingTool : MonoBehaviour
 
         Vector3 worldNormal = targetObject.transform.TransformDirection(originalNormals[index]).normalized;
         modifiedVertices[index] += worldNormal * influence;
-    }
-
-    /// <summary>
-    /// "Grab" moves the vertex toward the brush center point.
-    /// </summary>
-    private void HandleGrab(int index, Vector3 hitPoint, float influence)
-    {
-        Vector3 worldVertex = targetObject.transform.TransformPoint(modifiedVertices[index]);
-        Vector3 dir = (hitPoint - worldVertex).normalized;
-        modifiedVertices[index] += dir * influence;
     }
 
     /// <summary>
@@ -386,9 +371,6 @@ public class SculptingTool : MonoBehaviour
                 break;
             case SculptMode.Pull:
                 clipToPlay = pullSound;
-                break;
-            case SculptMode.Grab:
-                clipToPlay = grabSound;
                 break;
             case SculptMode.Pinch:
                 clipToPlay = pinchSound;

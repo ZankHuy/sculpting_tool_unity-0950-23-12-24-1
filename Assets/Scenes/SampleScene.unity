@@ -3827,7 +3827,7 @@ MonoBehaviour:
   sculptRadius: 1
   sculptStrength: 0.1
   sculptCamera: {fileID: 0}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1251697027}
   pushSound: {fileID: 8300000, guid: 251b5ba5274ba0a4c8d60e0bce6aeea6, type: 3}
   pullSound: {fileID: 8300000, guid: f6c9b59a07289ff408aeb1b79fa588ee, type: 3}
   pinchSound: {fileID: 8300000, guid: 9e607721423fe9a43bcb0eee82c095d0, type: 3}

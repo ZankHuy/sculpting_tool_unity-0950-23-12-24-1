@@ -8,7 +8,7 @@ public class ShapeCreator : MonoBehaviour
     public GameObject cylinderPrefab;
     public GameObject capsulePrefab;
     public GameObject planePrefab;
-
+    public GameObject handPrefab;
     private Stack<GameObject> createdShapes = new Stack<GameObject>(); // Stack to track created shapes
 
     public void CreateCube()
@@ -65,5 +65,25 @@ public class ShapeCreator : MonoBehaviour
     public void ToggleSculptingMode(bool isEnabled)
     {
         sculptingTool.enabled = isEnabled;
+    }
+    public void CreateHand()
+    {
+        if (handPrefab != null)
+        {
+            if (!handPrefab.activeInHierarchy)
+            {
+                handPrefab.SetActive(true);
+                //Debug.Log("Hand prefab activated.");
+            }
+            else
+            {
+                handPrefab.SetActive(false);
+                //Debug.Log("Hand prefab is already active.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Hand prefab reference is not assigned.");
+        }
     }
 }
